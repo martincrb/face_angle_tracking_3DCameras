@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>999</width>
-    <height>661</height>
+    <height>739</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,6 +30,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="face_text">
+          <property name="text">
+           <string>Face detected: FALSE</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QGroupBox" name="groupBox">
@@ -39,7 +46,7 @@
             <widget class="QWidget" name="">
              <property name="geometry">
               <rect>
-               <x>20</x>
+               <x>10</x>
                <y>20</y>
                <width>131</width>
                <height>55</height>
@@ -76,21 +83,21 @@
                 <item>
                  <widget class="QLabel" name="label_6">
                   <property name="text">
-                   <string>10</string>
+                   <string>-</string>
                   </property>
                  </widget>
                 </item>
                 <item>
                  <widget class="QLabel" name="label_7">
                   <property name="text">
-                   <string>2</string>
+                   <string>-</string>
                   </property>
                  </widget>
                 </item>
                 <item>
                  <widget class="QLabel" name="label_8">
                   <property name="text">
-                   <string>3</string>
+                   <string>-</string>
                   </property>
                  </widget>
                 </item>
@@ -99,6 +106,33 @@
              </layout>
             </widget>
            </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QRadioButton" name="radioButton">
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>RGB</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioButton_2">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Point Cloud</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -207,8 +241,8 @@
    <slot>initSelected()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>847</x>
-     <y>504</y>
+     <x>619</x>
+     <y>624</y>
     </hint>
     <hint type="destinationlabel">
      <x>897</x>
@@ -223,8 +257,8 @@
    <slot>stopCamera()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>810</x>
-     <y>546</y>
+     <x>582</x>
+     <y>666</y>
     </hint>
     <hint type="destinationlabel">
      <x>661</x>
@@ -232,9 +266,43 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>cam_list</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>FaceTrackingAppClass</receiver>
+   <slot>permitButtons()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>744</x>
+     <y>109</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>583</x>
+     <y>712</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cam_list</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>FaceTrackingAppClass</receiver>
+   <slot>setSelectedCamera(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>699</x>
+     <y>128</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>550</x>
+     <y>648</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>initSelected()</slot>
   <slot>stopCamera()</slot>
+  <slot>permitButtons()</slot>
+  <slot>setSelectedCamera(QModelIndex)</slot>
  </slots>
 </ui>

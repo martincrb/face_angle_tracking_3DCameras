@@ -6,12 +6,15 @@
 #include <QGLWidget>
 
 #define TIME 10
+#define MARGIN 0.07
+
 GLWidget::GLWidget(QWidget *parent)
 	: QOpenGLWidget(parent)
 {
 	//Add things here
 	QSurfaceFormat format;
 	format.setDepthBufferSize(24);
+	format.setSamples(4);
 	setFormat(format);
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -65,6 +68,19 @@ void GLWidget::initTexture(QImage texture) {
 void GLWidget::paintGL()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (_face_tracked) {
+		glColor3f(0.0, 1.0, 0.0);
+	}
+	else {
+		glColor3f(1.0, 0.0, 0.0);
+	}
+	glBegin(GL_QUADS);
+	glVertex3f(-1, -1, -1);
+	glVertex3f(1, -1, -1);
+	glVertex3f(1, 1, -1);
+	glVertex3f(-1, 1, -1);
+	glEnd();
+	glColor3f(1.0, 1.0, 1.0);
 	glEnable(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -79,27 +95,17 @@ void GLWidget::paintGL()
 	glEnd();
 	*/
 	glBegin(GL_QUADS);
-	glTexCoord2f(1, 0); glVertex3f(-1, -1, -1);
-	glTexCoord2f(0, 0); glVertex3f(1, -1, -1);
-	glTexCoord2f(0, 1); glVertex3f(1, 1, -1);
-	glTexCoord2f(1, 1); glVertex3f(-1, 1, -1);
+	glTexCoord2f(1, 0); glVertex3f(-1 + MARGIN, -1 + MARGIN, -1 + MARGIN);
+	glTexCoord2f(0, 0); glVertex3f(1 - MARGIN, -1 + MARGIN, -1 + MARGIN);
+	glTexCoord2f(0, 1); glVertex3f(1 - MARGIN, 1 - MARGIN, -1 + MARGIN);
+	glTexCoord2f(1, 1); glVertex3f(-1 + MARGIN, 1 - MARGIN, -1 + MARGIN);
 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
-	if (_face_tracked) {
-		glColor3f(0.0, 1.0, 0.0);
-	}
-	else {
-		glColor3f(1.0, 0.0, 0.0);
-	}
-	glBegin(GL_QUADS);
-	glVertex3f(-1, -1, -1);
-	glVertex3f(-1+0.05, -1, -1);
-	glVertex3f(-1+0.05, -1+0.05, -1);
-	glVertex3f(-1, -1+0.05, -1);
-	glEnd();
-	glColor3f(1.0,1.0, 1.0);
+	
+
+	
 	/*
 	glTexCoord2d(0, 0);// glVertex2d(0, 0);
 	glTexCoord2d(0.6, 0);// glVertex2d(gldata.width(), 0);
