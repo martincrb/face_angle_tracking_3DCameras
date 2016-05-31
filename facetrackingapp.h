@@ -5,6 +5,7 @@
 #include <QtWidgets/QMainWindow>
 #include "Camera3D.h"
 #include "RealSense.h"
+#include "IterativeClosestPoint.h"
 #include "ui_facetrackingapp.h"
 
 #include <iostream>
@@ -28,14 +29,21 @@ public slots:
 	void onNewFrame();
 	void permitButtons();
 	void setSelectedCamera(QModelIndex idx);
+	void setSelectedAlgorithm(QModelIndex idx);
 	void initSelected();
 	void stopCamera();
+	void changeMainRenderModeToRGB();
+	void changeMainRenderModeToPCL();
 private:
 	Ui::FaceTrackingAppClass ui;
+	void initAlgorithmParameters();
 	QStringListModel *camerasModel;
+	QStringListModel *algModel;
 	QString _selected_camera;
+	QString _selected_alg;
 	QTimer *timer;
 	Camera3D * camera;
+	TrackingAlgorithm *algorithm;
 	QStringList getConnectedCameras();
 
 	bool _cam_init;

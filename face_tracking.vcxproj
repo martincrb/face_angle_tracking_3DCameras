@@ -90,7 +90,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_QML_LIB;QT_QUICK_LIB;QT_HELP_LIB;QT_OPENGL_LIB;QT_WIDGETS_LIB;QT_XML_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Intel\RSSDK\sample\common\include;C:\Program Files %28x86%29\Intel\RSSDK\include;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtHelp;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtXml;$(RSSDK_DIR)/include;$(RSSDK_DIR)/sample/common/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Martin\Desktop\PCL 1.7.2\3rdParty\Eigen\eigen3;C:\Users\Martin\Desktop\PCL 1.7.2\3rdParty\VTK\include;C:\Users\Martin\Desktop\PCL 1.7.2\3rdParty\Qhull\include;C:\Users\Martin\Desktop\PCL 1.7.2\3rdParty\FLANN\include;C:\Users\Martin\Desktop\PCL 1.7.2\3rdParty\Boost\include\boost-1_57;C:\Users\Martin\Desktop\PCL 1.7.2\include\pcl-1.7;C:\Program Files %28x86%29\Intel\RSSDK\sample\common\include;C:\Program Files %28x86%29\Intel\RSSDK\include;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtQml;$(QTDIR)\include\QtQuick;$(QTDIR)\include\QtHelp;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtXml;$(RSSDK_DIR)/include;$(RSSDK_DIR)/sample/common/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -99,9 +99,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories);$(RSSDK_DIR)/lib/$(PlatformName);$(RSSDK_DIR)/sample/common/lib/$(PlatformName)/$(PlatformToolset);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Martin\Desktop\PCL 1.7.2\3rdParty\FLANN\lib;C:\Users\Martin\Desktop\PCL 1.7.2\3rdParty\Qhull\lib;C:\Users\Martin\Desktop\PCL 1.7.2\3rdParty\VTK\lib;C:\Users\Martin\Desktop\PCL 1.7.2\3rdParty\Boost\lib;C:\Users\Martin\Desktop\PCL 1.7.2\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories);$(RSSDK_DIR)/lib/$(PlatformName);$(RSSDK_DIR)/sample/common/lib/$(PlatformName)/$(PlatformToolset)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Qmld.lib;Qt5Quickd.lib;Qt5Helpd.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;Qt5Xmld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Qmld.lib;Qt5Quickd.lib;Qt5Helpd.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;Qt5Xmld.lib;pcl_common_debug.lib;pcl_common_release.lib;pcl_kdtree_debug.lib;pcl_kdtree_release.lib;flann.lib;pcl_features_debug.lib;pcl_features_release.lib;pcl_filters_debug.lib;pcl_filters_release.lib;pcl_io_debug.lib;pcl_io_ply_debug.lib;pcl_keypoints_debug.lib;pcl_octree_debug.lib;pcl_outofcore_debug.lib;pcl_people_debug.lib;pcl_recognition_debug.lib;pcl_registration_debug.lib;pcl_sample_consensus_debug.lib;pcl_search_debug.lib;pcl_segmentation_debug.lib;pcl_surface_debug.lib;pcl_tracking_debug.lib;pcl_visualization_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -166,6 +166,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GLWidget.cpp" />
+    <ClCompile Include="IterativeClosestPoint.cpp" />
     <ClCompile Include="libpxc\libpxc.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MSUtils.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Camera3D.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="GeneratedFiles\ui_facetrackingapp.h" />
+    <ClInclude Include="IterativeClosestPoint.h" />
     <ClInclude Include="MSUtils.h" />
     <ClInclude Include="quaternion.hpp" />
     <ClInclude Include="RealSense.h" />

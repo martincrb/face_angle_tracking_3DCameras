@@ -43,7 +43,7 @@
             <property name="title">
              <string>Tracking information</string>
             </property>
-            <widget class="QWidget" name="">
+            <widget class="QWidget" name="layoutWidget">
              <property name="geometry">
               <rect>
                <x>10</x>
@@ -125,7 +125,7 @@
             <item>
              <widget class="QRadioButton" name="radioButton_2">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="text">
                <string>Point Cloud</string>
@@ -298,11 +298,62 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>alg_list</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>FaceTrackingAppClass</receiver>
+   <slot>setSelectedAlgorithm(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>845</x>
+     <y>484</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>393</x>
+     <y>682</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>FaceTrackingAppClass</receiver>
+   <slot>changeMainRenderModeToRGB()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>228</x>
+     <y>645</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>259</x>
+     <y>626</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>FaceTrackingAppClass</receiver>
+   <slot>changeMainRenderModeToPCL()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>209</x>
+     <y>681</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>714</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>initSelected()</slot>
   <slot>stopCamera()</slot>
   <slot>permitButtons()</slot>
   <slot>setSelectedCamera(QModelIndex)</slot>
+  <slot>setSelectedAlgorithm(QModelIndex)</slot>
+  <slot>changeMainRenderModeToRGB()</slot>
+  <slot>changeMainRenderModeToPCL()</slot>
  </slots>
 </ui>

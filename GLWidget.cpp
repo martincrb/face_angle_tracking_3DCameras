@@ -6,13 +6,14 @@
 #include <QGLWidget>
 
 #define TIME 10
-#define MARGIN 0.07
+#define MARGIN 0.03
 
 GLWidget::GLWidget(QWidget *parent)
 	: QOpenGLWidget(parent)
 {
 	//Add things here
 	QSurfaceFormat format;
+	_mode = "RGB";
 	format.setDepthBufferSize(24);
 	format.setSamples(4);
 	setFormat(format);
@@ -45,6 +46,10 @@ void GLWidget::initializeGL()
 
 }
 
+void GLWidget::changeMode(QString mode) {
+	_mode = mode;
+}
+
 void GLWidget::initTexture(QImage texture) {
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &textureID);
@@ -65,8 +70,8 @@ void GLWidget::initTexture(QImage texture) {
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 	glDisable(GL_TEXTURE_2D);
 }
-void GLWidget::paintGL()
-{
+
+void GLWidget::paintRGB() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if (_face_tracked) {
 		glColor3f(0.0, 1.0, 0.0);
@@ -103,17 +108,44 @@ void GLWidget::paintGL()
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
-	
 
-	
+
+
 	/*
 	glTexCoord2d(0, 0);// glVertex2d(0, 0);
 	glTexCoord2d(0.6, 0);// glVertex2d(gldata.width(), 0);
 	glTexCoord2d(0.6, 0.6);// glVertex2d(gldata.width(), gldata.height());
 	glTexCoord2d(0, 0.6);// glVertex2d(0, gldata.height());
 	glEnd();
-	
+
 	*/
+}
+
+void GLWidget::paintPCL() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (_face_tracked) {
+		glColor3f(0.0, 1.0, 0.0);
+	}
+	else {
+		glColor3f(1.0, 0.0, 0.0);
+	}
+	glBegin(GL_QUADS);
+	glVertex3f(-1, -1, -1);
+	glVertex3f(1, -1, -1);
+	glVertex3f(1, 1, -1);
+	glVertex3f(-1, 1, -1);
+	glEnd();
+}
+
+
+void GLWidget::paintGL()
+{
+	if (_mode == "RGB") {
+		paintRGB();
+	}
+	else if (_mode == "PCL") {
+		paintPCL();
+	}
 	
 }
 

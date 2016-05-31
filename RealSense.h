@@ -14,8 +14,7 @@ public:
 	void stop();
 	void getFrameImage(QImage &image);
 	void getDepthPoints();
-	void getFaceOrientation();
-	void getFaceOrientation(TrackingAlgorithm *tA);
+	bool track();
 	void update();
 private:
 	PXCSenseManager *pp;

@@ -4,6 +4,7 @@
 
 RealSense::RealSense()
 {
+	_tracker_set = false;
 }
 
 
@@ -52,9 +53,33 @@ void RealSense::init(FaceTrackingApp *app)
 }
 
 void RealSense::update() {
+	//if (pp->AcquireFrame(true)<PXC_STATUS_NO_ERROR)
+	//	return;
+
 	QImage actualFrame;
 	getFrameImage(actualFrame);
 	renderer->initTexture(actualFrame);
+
+	bool orientationIsValid = false;
+	if (_tracker_set == false) { //Use built-in algorithm
+		orientationIsValid = track();
+	}
+	else {
+		//Get Points detected by camera
+
+		//Then, filter points using filter object
+
+		//Pass cloud to algorithm
+		orientationIsValid = tracker->compute(nullptr, nullptr, _roll, _pitch, _yaw);
+	}
+
+	//pp->ReleaseFrame();
+
+	renderer->setFaceTracked(orientationIsValid);
+	app->setFaceTracked(orientationIsValid);
+	if (orientationIsValid) {
+		app->setFaceAngles(_yaw, _pitch, _roll);
+	}
 }
 
 void RealSense::stop() {
@@ -65,8 +90,6 @@ void RealSense::getFrameImage(QImage &image)
 {
 	if (pp->AcquireFrame(true)<PXC_STATUS_NO_ERROR)
 		return;
-
-		
 	// retrieve the sample
 	PXCCapture::Sample *sample = pp->QuerySample();
 
@@ -81,16 +104,25 @@ void RealSense::getFrameImage(QImage &image)
 	image = colorImage;
 
 	sample->color->ReleaseAccess(&colorData);
+	pp->ReleaseFrame();
+
+}
+void RealSense::getDepthPoints()
+{
+}
+
+bool RealSense::track() {
+	if (pp->AcquireFrame(true)<PXC_STATUS_NO_ERROR)
+		return false;
 
 	outputData->Update();
-
+	bool valid = false;
 	/* Detection Structs */
 	PXCFaceData::DetectionData *detectionData;
 	PXCRectI32 rectangle;
-	
+
+
 	// iterate through faces
-	renderer->setFaceTracked(false);
-	app->setFaceTracked(false);
 	pxcU16 numOfFaces = outputData->QueryNumberOfDetectedFaces();
 	for (pxcU16 i = 0; i < numOfFaces; i++)
 	{
@@ -98,9 +130,6 @@ void RealSense::getFrameImage(QImage &image)
 		PXCFaceData::Face *trackedFace = outputData->QueryFaceByIndex(i);
 		if (trackedFace != NULL)
 		{
-			renderer->setFaceTracked(true);
-			app->setFaceTracked(true);
-
 			detectionData = trackedFace->QueryDetection();
 			detectionData->QueryBoundingRect(&rectangle);
 
@@ -112,35 +141,15 @@ void RealSense::getFrameImage(QImage &image)
 				if (poseData->QueryPoseQuaternion(&faceRotation)) {
 					PXCFaceData::PoseEulerAngles eulerAngles;
 					poseData->QueryPoseAngles(&eulerAngles);
-					geom::Quaternion q(faceRotation.x, faceRotation.y, faceRotation.z, faceRotation.w);
-					geom::Quaternion view(0.0, 0.0, -1.0, 0.0);
-					geom::Quaternion result = q * view * q.get_conjugate();
-					auto faceViewDir_x = static_cast<float>(result.x);
-					auto faceViewDir_y = static_cast<float>(result.y);
-					auto faceViewDir_z = static_cast<float>(result.z);
 
-					app->setFaceAngles(eulerAngles.yaw, eulerAngles.pitch, eulerAngles.roll);
+					_yaw = eulerAngles.yaw;
+					_pitch = eulerAngles.pitch;
+					_roll = eulerAngles.roll;
+					valid = true;
 				}
 			}
-			else {
-				renderer->setFaceTracked(false);
-				app->setFaceTracked(false);
-			}
-		}
-		else {
-			renderer->setFaceTracked(false);
-			app->setFaceTracked(false);
 		}
 	}
-	// go fetching the next sample
 	pp->ReleaseFrame();
-}
-void RealSense::getDepthPoints()
-{
-}
-void RealSense::getFaceOrientation()
-{
-}
-void RealSense::getFaceOrientation(TrackingAlgorithm *tA)
-{
+	return valid;
 }

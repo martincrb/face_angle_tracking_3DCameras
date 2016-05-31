@@ -15,12 +15,16 @@ public:
 	virtual void stop() = 0;
 	virtual void getFrameImage(QImage &image) = 0;
 	virtual void getDepthPoints() = 0;
-	virtual void getFaceOrientation() = 0;
-	virtual void getFaceOrientation(TrackingAlgorithm *tA) = 0;
 	virtual void update() = 0;
+	virtual bool track() = 0;
 	void setRenderer(GLWidget *renderer);
+	void setTracker(TrackingAlgorithm *tracker);
+	bool trackerIsSet();
 protected:
 	GLWidget *renderer;
+	TrackingAlgorithm *tracker;
+	bool _tracker_set;
+	float _roll, _pitch, _yaw;
 	FaceTrackingApp *app;
 };
 

@@ -18,6 +18,7 @@ public:
 	void setCurrentFrameToShow(QImage &frame);
 	void initTexture(QImage texture);
 	void setFaceTracked(bool tracked);
+	void changeMode(QString mode);
 protected:
 	void initializeGL() Q_DECL_OVERRIDE;
 	void paintGL() Q_DECL_OVERRIDE;
@@ -34,5 +35,9 @@ private:
 	GLuint textureID;
 	QMatrix4x4 m_projection;
 	bool _face_tracked;
+	QString _mode;
+
+	void paintRGB();
+	void paintPCL();
 };
 
