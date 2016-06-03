@@ -170,6 +170,7 @@
     <ClCompile Include="libpxc\libpxc.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MSUtils.cpp" />
+    <ClCompile Include="OneEveryKFilter.cpp" />
     <ClCompile Include="quaternion.cpp" />
     <ClCompile Include="RealSense.cpp" />
     <ClCompile Include="TrackingAlgorithm.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="GeneratedFiles\ui_facetrackingapp.h" />
     <ClInclude Include="IterativeClosestPoint.h" />
     <ClInclude Include="MSUtils.h" />
+    <ClInclude Include="OneEveryKFilter.h" />
     <ClInclude Include="quaternion.hpp" />
     <ClInclude Include="RealSense.h" />
     <ClInclude Include="TrackingAlgorithm.h" />

@@ -6,6 +6,13 @@
 #include <qtimer.h>
 #include <qpainter.h>
 #include <qmatrix4x4.h>
+
+#undef max
+#undef min
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/registration/icp.h>
+
 class GLWidget :
 	public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -16,9 +23,11 @@ public:
 	~GLWidget();
 	void clean();
 	void setCurrentFrameToShow(QImage &frame);
+	void setCurrentFramePCL(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud);
 	void initTexture(QImage texture);
 	void setFaceTracked(bool tracked);
 	void changeMode(QString mode);
+	QString getMode();
 protected:
 	void initializeGL() Q_DECL_OVERRIDE;
 	void paintGL() Q_DECL_OVERRIDE;
@@ -36,6 +45,8 @@ private:
 	QMatrix4x4 m_projection;
 	bool _face_tracked;
 	QString _mode;
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud;
 
 	void paintRGB();
 	void paintPCL();

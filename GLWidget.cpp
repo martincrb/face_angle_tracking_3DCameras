@@ -23,6 +23,9 @@ GLWidget::GLWidget(QWidget *parent)
 
 	timer->start(TIME);
 	_face_tracked = false;
+	//xyz_cloud = new pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ> (640, 480));
+	//xyz_cloud->points.resize(640 * 480);
+	
 }
 
 
@@ -129,15 +132,21 @@ void GLWidget::paintPCL() {
 	else {
 		glColor3f(1.0, 0.0, 0.0);
 	}
-	glBegin(GL_QUADS);
-	glVertex3f(-1, -1, -1);
-	glVertex3f(1, -1, -1);
-	glVertex3f(1, 1, -1);
-	glVertex3f(-1, 1, -1);
+	glPointSize(1.0f);
+	glBegin(GL_POINTS);
+	for (unsigned int i = 0; i < xyz_cloud->points.size(); ++i) {
+		float x, y, z;
+		x = xyz_cloud->points[i].x;
+		y = xyz_cloud->points[i].y;
+		z = xyz_cloud->points[i].z;
+		glVertex3f(x,y,z);
+	}
 	glEnd();
 }
 
-
+QString GLWidget::getMode() {
+	return _mode;
+}
 void GLWidget::paintGL()
 {
 	if (_mode == "RGB") {
@@ -173,4 +182,8 @@ void GLWidget::setCurrentFrameToShow(QImage &frame) {
 	gldata = QGLWidget::convertToGLFormat(texture);
 	
 	//gldata = QGLWidget::convertToGLFormat(*texture);
+}
+
+void GLWidget::setCurrentFramePCL(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud) {
+	this->xyz_cloud = xyz_cloud;
 }

@@ -80,6 +80,9 @@
     <ClCompile Include="IterativeClosestPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OneEveryKFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="facetrackingapp.h">
@@ -118,6 +121,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IterativeClosestPoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OneEveryKFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
