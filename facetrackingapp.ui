@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>999</width>
-    <height>739</height>
+    <width>1419</width>
+    <height>1122</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,24 +20,108 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <widget class="GLWidget" name="camviewer">
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="GLWidget" name="camviewer">
+              <property name="minimumSize">
+               <size>
+                <width>640</width>
+                <height>480</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="gl_zoom">
+              <property name="minimum">
+               <number>5</number>
+              </property>
+              <property name="maximum">
+               <number>50</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Cameras:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <item>
+               <widget class="QListView" name="cam_list"/>
+              </item>
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Algorithms:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QListView" name="alg_list"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCustomPlot" name="widget" native="true">
           <property name="minimumSize">
            <size>
-            <width>640</width>
-            <height>480</height>
+            <width>0</width>
+            <height>300</height>
            </size>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="face_text">
-          <property name="text">
-           <string>Face detected: FALSE</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <item>
+           <widget class="QLabel" name="face_text">
+            <property name="text">
+             <string>Face detected: FALSE</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>Points Analyzed:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>Mean time per frame:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <property name="spacing">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QGroupBox" name="groupBox">
             <property name="title">
@@ -48,8 +132,8 @@
               <rect>
                <x>10</x>
                <y>20</y>
-               <width>131</width>
-               <height>55</height>
+               <width>171</width>
+               <height>202</height>
               </rect>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout">
@@ -109,8 +193,17 @@
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_8">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QRadioButton" name="radioButton">
+              <property name="maximumSize">
+               <size>
+                <width>75</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="autoFillBackground">
                <bool>false</bool>
               </property>
@@ -127,6 +220,12 @@
               <property name="enabled">
                <bool>true</bool>
               </property>
+              <property name="maximumSize">
+               <size>
+                <width>75</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="text">
                <string>Point Cloud</string>
               </property>
@@ -136,8 +235,11 @@
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_2">
+            <property name="spacing">
+             <number>0</number>
+            </property>
             <property name="leftMargin">
-             <number>200</number>
+             <number>0</number>
             </property>
             <item>
              <widget class="QPushButton" name="pushButton">
@@ -162,37 +264,117 @@
             </item>
            </layout>
           </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_7">
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Cameras:</string>
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>200</height>
+             </size>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QListView" name="cam_list"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Algorithms:</string>
+            <property name="maximumSize">
+             <size>
+              <width>400</width>
+              <height>16777215</height>
+             </size>
             </property>
+            <property name="title">
+             <string>Algorithm parameters</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_11">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_10">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QLabel" name="label_10">
+                   <property name="text">
+                    <string>Epsilon Threshold</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit">
+                   <property name="placeholderText">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_9">
+                 <item>
+                  <widget class="QLabel" name="label_9">
+                   <property name="text">
+                    <string>SubSampling</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_4">
+                   <item>
+                    <widget class="QRadioButton" name="radioButton_3">
+                     <property name="text">
+                      <string>None</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QRadioButton" name="radioButton_4">
+                     <property name="text">
+                      <string>Uniform</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="use_face_check">
+                 <property name="text">
+                  <string>Use Face</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_3">
+               <property name="title">
+                <string>SubSampling parameters</string>
+               </property>
+               <widget class="QLabel" name="label_11">
+                <property name="geometry">
+                 <rect>
+                  <x>10</x>
+                  <y>20</y>
+                  <width>71</width>
+                  <height>16</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Radius Search</string>
+                </property>
+               </widget>
+               <widget class="QLineEdit" name="lineEdit_2">
+                <property name="geometry">
+                 <rect>
+                  <x>80</x>
+                  <y>20</y>
+                  <width>113</width>
+                  <height>20</height>
+                 </rect>
+                </property>
+               </widget>
+              </widget>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item>
-           <widget class="QListView" name="alg_list"/>
           </item>
          </layout>
         </item>
@@ -207,7 +389,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>999</width>
+     <width>1419</width>
      <height>21</height>
     </rect>
    </property>
@@ -228,6 +410,15 @@
    <class>GLWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>glwidget.h</header>
+   <slots>
+    <slot>setZoomValue(int)</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header location="global">qcustomplot.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
@@ -241,8 +432,8 @@
    <slot>initSelected()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>619</x>
-     <y>624</y>
+     <x>524</x>
+     <y>639</y>
     </hint>
     <hint type="destinationlabel">
      <x>897</x>
@@ -257,8 +448,8 @@
    <slot>stopCamera()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>582</x>
-     <y>666</y>
+     <x>524</x>
+     <y>694</y>
     </hint>
     <hint type="destinationlabel">
      <x>661</x>
@@ -321,8 +512,8 @@
    <slot>changeMainRenderModeToRGB()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>228</x>
-     <y>645</y>
+     <x>258</x>
+     <y>653</y>
     </hint>
     <hint type="destinationlabel">
      <x>259</x>
@@ -337,12 +528,60 @@
    <slot>changeMainRenderModeToPCL()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>209</x>
-     <y>681</y>
+     <x>258</x>
+     <y>728</y>
     </hint>
     <hint type="destinationlabel">
      <x>226</x>
      <y>714</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_3</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_3</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>659</x>
+     <y>684</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>915</x>
+     <y>773</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>FaceTrackingAppClass</receiver>
+   <slot>startTest()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>524</x>
+     <y>749</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>467</x>
+     <y>793</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>gl_zoom</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>camviewer</receiver>
+   <slot>setZoomValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>103</x>
+     <y>542</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>440</y>
     </hint>
    </hints>
   </connection>
@@ -355,5 +594,6 @@
   <slot>setSelectedAlgorithm(QModelIndex)</slot>
   <slot>changeMainRenderModeToRGB()</slot>
   <slot>changeMainRenderModeToPCL()</slot>
+  <slot>startTest()</slot>
  </slots>
 </ui>

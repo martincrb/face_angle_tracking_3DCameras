@@ -6,7 +6,7 @@
 #include <QGLWidget>
 
 #define TIME 10
-#define MARGIN 0.03
+#define MARGIN 0.0
 
 GLWidget::GLWidget(QWidget *parent)
 	: QOpenGLWidget(parent)
@@ -19,11 +19,11 @@ GLWidget::GLWidget(QWidget *parent)
 	setFormat(format);
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-	timer->start(10);
-
+	//timer->start(10);
+	_zoom = 0.5;
 	timer->start(TIME);
 	_face_tracked = false;
-	//xyz_cloud = new pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ> (640, 480));
+	xyz_cloud = CloudType::Ptr(new CloudType(640, 480));
 	//xyz_cloud->points.resize(640 * 480);
 	
 }
@@ -103,14 +103,51 @@ void GLWidget::paintRGB() {
 	glEnd();
 	*/
 	glBegin(GL_QUADS);
-	glTexCoord2f(1, 0); glVertex3f(-1 + MARGIN, -1 + MARGIN, -1 + MARGIN);
-	glTexCoord2f(0, 0); glVertex3f(1 - MARGIN, -1 + MARGIN, -1 + MARGIN);
-	glTexCoord2f(0, 1); glVertex3f(1 - MARGIN, 1 - MARGIN, -1 + MARGIN);
-	glTexCoord2f(1, 1); glVertex3f(-1 + MARGIN, 1 - MARGIN, -1 + MARGIN);
+	glTexCoord2f(0, 0); glVertex3f(-1 + MARGIN, -1 + MARGIN, -1 + MARGIN);
+	glTexCoord2f(1, 0); glVertex3f(1 - MARGIN, -1 + MARGIN, -1 + MARGIN);
+	glTexCoord2f(1, 1); glVertex3f(1 - MARGIN, 1 - MARGIN, -1 + MARGIN);
+	glTexCoord2f(0, 1); glVertex3f(-1 + MARGIN, 1 - MARGIN, -1 + MARGIN);
 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
+	PXCPoint3DF32 v1;
+	PXCPoint3DF32 v2;
+	PXCPoint3DF32 v3;
+	PXCPoint3DF32 v4;
+	v1.x = (2 * (float)_rectangleRGB[0].x / 640) - 1;
+	v1.y = (2 * (float)_rectangleRGB[0].y / 480) - 1;
+
+	v2.x = (2 * (float)_rectangleRGB[1].x / 640) - 1;
+	v2.y = (2*(float)_rectangleRGB[1].y / 480) - 1;
+
+	v3.x = (2*(float)_rectangleRGB[2].x / 640) - 1;
+	v3.y = (2 * (float)_rectangleRGB[2].y / 480) - 1;
+
+	v4.x = (2 * (float)_rectangleRGB[3].x / 640) - 1;
+	v4.y = (2 * (float)_rectangleRGB[3].y / 480) - 1;
+
+	glColor3f(1.0, 0.0, 1.0);
+	glBegin(GL_LINES);
+	glVertex3f(v1.x, v1.y, -1 + 2 * MARGIN);
+	glVertex3f(v2.x, v2.y, -1 + 2 * MARGIN);
+
+	glVertex3f(v2.x, v2.y, -1 + 2 * MARGIN);
+	glVertex3f(v3.x, v3.y, -1 + 2 * MARGIN);
+
+	glVertex3f(v3.x, v3.y, -1 + 2 * MARGIN);
+	glVertex3f(v4.x, v4.y, -1 + 2 * MARGIN);
+
+	glVertex3f(v4.x, v4.y, -1 + 2 * MARGIN);
+	glVertex3f(v1.x, v1.y, -1 + 2 * MARGIN);
+
+	glEnd();
+	//glBegin(GL_LINE);
+	//glVertex3f(-0.9, -0.9, -1 + 2 * MARGIN); glVertex3f(0.9, 0.9, -1 + 2 * MARGIN);
+	//glVertex3f(v1.x, v1.y, -1 + 2 * MARGIN); glVertex3f(v2.x, v2.y, -1 + 2 * MARGIN);
+	//glVertex3f(v2.x, v2.y, -1 + 2 * MARGIN); glVertex3f(v3.x, v3.y, -1 + 2 * MARGIN);
+
+	//glEnd();
 
 
 
@@ -126,6 +163,9 @@ void GLWidget::paintRGB() {
 
 void GLWidget::paintPCL() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glScalef(_zoom, _zoom, _zoom);
 	if (_face_tracked) {
 		glColor3f(0.0, 1.0, 0.0);
 	}
@@ -142,6 +182,18 @@ void GLWidget::paintPCL() {
 		glVertex3f(x,y,z);
 	}
 	glEnd();
+
+	if (_face_tracked) {
+		glColor3f(0.0, 1.0, 0.0);
+	}
+	else {
+		glColor3f(1.0, 0.0, 0.0);
+	}
+	glPopMatrix();
+}
+
+void GLWidget::setZoomValue(int val) {
+	_zoom = (float)val / 10;
 }
 
 QString GLWidget::getMode() {
@@ -186,4 +238,18 @@ void GLWidget::setCurrentFrameToShow(QImage &frame) {
 
 void GLWidget::setCurrentFramePCL(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud) {
 	this->xyz_cloud = xyz_cloud;
+}
+
+void GLWidget::setCurrentFrameRectangle(PXCPoint3DF32 rectangle[4]) {
+	_rectangle[0] = rectangle[0];
+	_rectangle[1] = rectangle[1];
+	_rectangle[2] = rectangle[2];
+	_rectangle[3] = rectangle[3];
+}
+
+void GLWidget::setCurrentFrameRectangleRGB(PXCPointF32 rectangle[4]) {
+	_rectangleRGB[0] = rectangle[0];
+	_rectangleRGB[1] = rectangle[1];
+	_rectangleRGB[2] = rectangle[2];
+	_rectangleRGB[3] = rectangle[3];
 }

@@ -17,3 +17,6 @@ QMap<QString, QString> TrackingAlgorithm::getParameters() {
 	return params;
 }
 
+QString TrackingAlgorithm::getParameter(const QString key) {
+	return params[key];
+}

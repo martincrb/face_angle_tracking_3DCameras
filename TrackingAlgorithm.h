@@ -10,6 +10,10 @@
 #include <pcl/point_types.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/keypoints/uniform_sampling.h>
+#include "glm/geometric.hpp"
+#include "glm/gtc/quaternion.hpp"
+
+
 
 typedef pcl::PointCloud<pcl::PointXYZ> CloudType;
 class TrackingAlgorithm
@@ -20,9 +24,10 @@ public:
 	virtual bool compute(CloudType cloud1, CloudType cloud2, float &roll, float &pitch, float &yaw) = 0;
 	void setParameters(QMap<QString, QString> p);
 	QMap<QString, QString> getParameters();
+	QString getParameter(const QString key);
 	virtual void initializeParameters() = 0;
 
-private:
+protected:
 	
 	QMap<QString, QString> params;
 };

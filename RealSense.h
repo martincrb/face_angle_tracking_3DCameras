@@ -4,6 +4,8 @@
 #include "pxcmetadata.h"
 #include "pxcprojection.h"
 #include <assert.h> 
+#include <boost/geometry/geometry.hpp>
+#include <QTime>
 typedef pcl::PointCloud<pcl::PointXYZ> CloudType;
 
 class RealSense :
@@ -30,7 +32,7 @@ private:
 	CloudType::Ptr first_cloud;
 	//Filters
 	pcl::UniformSampling<pcl::PointXYZ> uniform_sampling;
-
+	
 	bool _last_init;
 };
 

@@ -80,7 +80,19 @@
     <ClCompile Include="IterativeClosestPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OneEveryKFilter.cpp">
+    <ClCompile Include="Serial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Arduino.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_qcustomplot.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_qcustomplot.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="include\qcustomplot\qcustomplot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -95,6 +107,9 @@
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="GLWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\qcustomplot\qcustomplot.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -123,7 +138,10 @@
     <ClInclude Include="IterativeClosestPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OneEveryKFilter.h">
+    <ClInclude Include="Serial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Arduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -17,5 +17,6 @@ private:
 	pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
 
 	bool _original_init;
+	float _epsilon;
 };
 

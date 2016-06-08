@@ -13,7 +13,9 @@ Camera3D::~Camera3D()
 void Camera3D::setRenderer(GLWidget *renderer) {
 	this->renderer = renderer;
 }
-
+void Camera3D::useFace(bool face) {
+	_use_face = face;
+}
 bool Camera3D::trackerIsSet() {
 	return _tracker_set;
 }
