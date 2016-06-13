@@ -5,6 +5,7 @@
 #include <QtWidgets/QMainWindow>
 #include "Camera3D.h"
 #include "RealSense.h"
+#include "MKinect.h"
 #include "IterativeClosestPoint.h"
 #include "ui_facetrackingapp.h"
 #include "Arduino.h"
@@ -34,9 +35,16 @@ public slots:
 	void changeMainRenderModeToRGB();
 	void changeMainRenderModeToPCL();
 	void addIncrementalTimeMean(double time);
-	void setPointsAnalyzed(int points);
+	void setPointsAnalyzed(int points, int points2);
+	void setICPConverged(bool conv, double fitness);
+
+	void setMessage(QString);
 	void startTest();
 	void updatePlot(bool test);
+	void saveYawPlot();
+	void savePitchPlot();
+	void saveRollPlot();
+
 private:
 	Ui::FaceTrackingAppClass ui;
 	void initAlgorithmParameters();
@@ -53,6 +61,8 @@ private:
 	Arduino testPlatform;
 
 	QVector<double> _plot_detected;
+	QVector<double> _plot_detected_p;
+	QVector<double> _plot_detected_r;
 	QVector<double> _plot_shouldbe;
 	QVector<double> _plot_frames;
 	int _actualFrame;

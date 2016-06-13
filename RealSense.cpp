@@ -23,25 +23,33 @@ void RealSense::init(FaceTrackingApp *app)
 	this->app = app;
 	pp = PXCSenseManager::CreateInstance();
 	if (!pp) {
-		std::cout << "Unable to create the SenseManager" << std::endl;
+		app->setMessage("Unable to create the SenseManager");
 	}
-	
+	_actual_frame = 0;
 
-	pp->EnableStream(PXCCapture::STREAM_TYPE_COLOR, 640, 480);
+	if (pp->EnableStream(PXCCapture::STREAM_TYPE_COLOR, 640, 480) < PXC_STATUS_NO_ERROR) {
+		
+		app->setMessage("Unable to create Stream");
+		return;
 
-	
+	}
 	if (pp->EnableFace() < PXC_STATUS_NO_ERROR) {
+		app->setMessage("Unable to create Face Module");
 		return;
 	}
 	faceAnalyzer = pp->QueryFace();
 	if (!faceAnalyzer) {
+		app->setMessage("Unable to create Face Analyzer");
 		return;
 	}
 	outputData = faceAnalyzer->CreateOutput();
 	if (!pp) {
 		return;
 	}
-	if(pp->Init() < PXC_STATUS_NO_ERROR) return;
+	if (pp->Init() < PXC_STATUS_NO_ERROR){
+		app->setMessage("Unable to init the SenseManager");
+		return;
+	}
 	_device = pp->QueryCaptureManager()->QueryDevice();
 	_device->SetMirrorMode(_device->MIRROR_MODE_HORIZONTAL);
 	PXCFaceConfiguration* config = faceAnalyzer->CreateActiveConfiguration();
@@ -198,6 +206,8 @@ void RealSense::update() {
 	sam->depth->ReleaseAccess(&data);
 	projection->Release();
 
+	pp->ReleaseFrame();
+
 	int validP = 0;
 	for (int i = 0; i < SIZE; i++) {
 		if (convertPoint(vertices[i], xyz_cloud->points[i], points3D, _use_face)) {
@@ -217,6 +227,7 @@ void RealSense::update() {
 		algorithmTime.start();
 		orientationIsValid = track();
 		int elapsed = algorithmTime.elapsed();
+		++_actual_frame;
 		app->addIncrementalTimeMean(elapsed);
 	}
 
@@ -249,17 +260,21 @@ void RealSense::update() {
 				uniform_sampling.setInputCloud(cloud_filtered);
 				uniform_sampling.setRadiusSearch(radius_search);
 				uniform_sampling.compute(indicesIN);
+				//pcl::copyPointCloud(*cloud_filtered, indicesIN.points, *first_cloud);
 				pcl::copyPointCloud(*cloud_filtered, indicesIN.points, *first_cloud);
 				pcl::copyPointCloud(*cloud_filtered, indicesIN.points, *last_cloud);
 				
 			}
 			else if (subsampling_none) {
+				pcl::copyPointCloud(*cloud_filtered, *first_cloud);
 				pcl::copyPointCloud(*cloud_filtered, *last_cloud);
 			}
 			else if (subsampling_random) {
+				pcl::copyPointCloud(*cloud_filtered, *first_cloud);
 				pcl::copyPointCloud(*cloud_filtered, *last_cloud);
 			}
 			//Save in first_cloud the first frame, filtered and prepared :D
+			//pcl::io::savePCDFileASCII("../clouds/rs/init_cloud.pcd", *cloud_filtered);
 		}
 		//Filter NANS for ICP
 		xyz_cloud->is_dense = false;
@@ -277,6 +292,9 @@ void RealSense::update() {
 			uniform_sampling.setRadiusSearch(radius_search);
 			uniform_sampling.compute(indicesOUT);
 			pcl::copyPointCloud(*_cloud1.get(), indicesOUT.points, *actual_cloud);
+			++_actual_frame;
+			//pcl::io::savePCDFileASCII("../clouds/rs/actual_cloud_" + QString::number(_actual_frame).toStdString() + ".pcd", *actual_cloud);
+			//pcl::copyPointCloud(*_cloud1.get(), *actual_cloud);
 			int elapsedF = filterTime.elapsed();
 			//Save frame info to file
 			QFile file("../"+QString::number(radius_search)+"_uniform_info.txt");
@@ -296,9 +314,13 @@ void RealSense::update() {
 
 		//Pass cloud to algorithm
 		if (_last_init) { //Compute if we have 2 frames (last_cloud is filled with the first frame)
-			app->setPointsAnalyzed(actual_cloud->size());
-			
-			orientationIsValid = tracker->compute(*last_cloud.get(), *actual_cloud.get(), _roll, _pitch, _yaw);
+			app->setPointsAnalyzed(actual_cloud->size(), first_cloud->size());
+			if (actual_cloud->size() > 0) {
+				
+			}
+			double fitness;
+			orientationIsValid = tracker->compute(*last_cloud.get(), *actual_cloud.get(), _roll, _pitch, _yaw, fitness);
+			app->setICPConverged(orientationIsValid, fitness);
 			if (valid) {
 				orientationIsValid = true;
 			}
@@ -307,7 +329,7 @@ void RealSense::update() {
 		app->addIncrementalTimeMean(elapsed);
 	}
 
-	pp->ReleaseFrame();
+	
 
 	renderer->setFaceTracked(orientationIsValid);
 	app->setFaceTracked(orientationIsValid);
@@ -317,6 +339,7 @@ void RealSense::update() {
 }
 
 void RealSense::stop() {
+	pp->Close();
 	pp->Release();
 }
 
@@ -342,6 +365,14 @@ void RealSense::getFrameImage(QImage &image)
 	//QImage depthImage(depthData.planes[0], width2, height2, QImage::Format_RGB32);
 	image = colorImage;
 
+	QDir dir("../tests/rs/last_test");
+	if (!dir.exists()) {
+		dir.mkpath(".");
+		colorImage.save("../tests/rs/last_test/image_" + QString::number(_actual_frame) + ".png");
+	}
+	else {
+		colorImage.save("../tests/rs/last_test/image_" + QString::number(_actual_frame)+".png");
+	}
 	sample->color->ReleaseAccess(&colorData);
 	pp->ReleaseFrame();
 

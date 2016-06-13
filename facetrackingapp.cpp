@@ -6,8 +6,11 @@ FaceTrackingApp::FaceTrackingApp(QWidget *parent)
 	ui.setupUi(this);
 	_elapsedFrames = 0;
 	_last_mean_frametime = 0;
-	ui.lineEdit->setText("0.005");
-	ui.lineEdit_2->setText("0.005");
+	ui.lineEdit->setText("1"); //Euclidean epsilon
+	ui.lineEdit_2->setText("0.008"); //radius subsampling search
+	ui.lineEdit_3->setText("1"); //transformation epsilon
+	ui.lineEdit_4->setText("100"); //max iter
+	ui.lineEdit_5->setText("1"); //max correspondence distance
 	_actualAngle = 0;
 	_actualFrame = 0;
 	_cam_init = false;
@@ -21,16 +24,28 @@ FaceTrackingApp::FaceTrackingApp(QWidget *parent)
 
 	ui.widget->addGraph();
 	ui.widget->graph(1)->setPen(QPen(Qt::red));
+
+	ui.widget_2->addGraph();
+	ui.widget_2->graph(0)->setPen(QPen(Qt::blue));
+
+	ui.widget_3->addGraph();
+	ui.widget_3->graph(0)->setPen(QPen(Qt::blue));
+
+
 	//Detect connected cameras
 	QStringList cameras = getConnectedCameras();
 	QStringList camerasSimplified;
 	bool sr300 = false;
+	bool kinect2 = false;
 	for (QString cameraStr : cameras) {
 		if (cameraStr.contains("SR300") && !sr300) {
 			camerasSimplified.append("Intel(R) RealSense(TM) Camera SR300");
 			sr300 = true;
 		}
+		
 	}
+	camerasSimplified.append("Microsoft Kinect 2");
+	kinect2 = true;
 	camerasModel = new QStringListModel(camerasSimplified);
 
 	QStringList algorithms;
@@ -90,10 +105,20 @@ void FaceTrackingApp::addIncrementalTimeMean(double time) {
 	double new_mean = ((_elapsedFrames - 1)*_last_mean_frametime + time) / _elapsedFrames;
 	ui.label_12->setText("Mean time per frame: " + QString::number(new_mean));
 }
-void FaceTrackingApp::setPointsAnalyzed(int points) {
-	ui.label_13->setText("Points Analyzed: " + QString::number(points));
+void FaceTrackingApp::setPointsAnalyzed(int points, int points2) {
+	ui.label_13->setText("Points Analyzed: " + QString::number(points) + " vs " + QString::number(points2));
 }
 
+void FaceTrackingApp::setICPConverged(bool conv, double fitness){
+	if (conv) {
+		ui.label_17->setText("ICP converged: TRUE");
+		ui.label_18->setText("ICP Fitness: " + QString::number(fitness));
+	}
+	else {
+		ui.label_17->setText("ICP converged: FALSE");
+		ui.label_18->setText("ICP Fitness: -");
+	}
+}
 void FaceTrackingApp::setSelectedCamera(QModelIndex idx) {
 	_selected_camera = camerasModel->data(idx, 0).toString();
 }
@@ -125,6 +150,8 @@ void FaceTrackingApp::setFaceAngles(float yaw, float pitch, float roll) {
 	
 	//Update plots
 	_plot_detected.append(yaw);
+	_plot_detected_r.append(roll);
+	_plot_detected_p.append(pitch);
 	_plot_frames.append(_actualFrame++);
 
 	ui.label_6->setNum(yaw);
@@ -162,8 +189,8 @@ void FaceTrackingApp::onStop()
 
 void FaceTrackingApp::updatePlot(bool test) {
 	//Prepare plot
-	
-	ui.widget->yAxis->setLabel("Angles");
+	//Yaw Plot
+	ui.widget->yAxis->setLabel("Yaw");
 	ui.widget->xAxis->setLabel("Frame");
 	ui.widget->yAxis->setRange(-90, 90);
 	ui.widget->xAxis->setRange(0, _plot_frames.size() - 1);
@@ -178,6 +205,26 @@ void FaceTrackingApp::updatePlot(bool test) {
 		ui.widget->graph(1)->setVisible(false);
 	}
 	ui.widget->replot();
+
+	//Pitch plot
+	ui.widget_2->yAxis->setLabel("Pitch");
+	ui.widget_2->xAxis->setLabel("Frame");
+	ui.widget_2->yAxis->setRange(-90, 90);
+	ui.widget_2->xAxis->setRange(0, _plot_frames.size() - 1);
+	ui.widget_2->graph(0)->setData(_plot_frames, _plot_detected_p);
+	ui.widget_2->graph(0)->setName("Detected angle");
+	
+	ui.widget_2->replot();
+
+	//Roll plot
+	ui.widget_3->yAxis->setLabel("Roll");
+	ui.widget_3->xAxis->setLabel("Frame");
+	ui.widget_3->yAxis->setRange(-90, 90);
+	ui.widget_3->xAxis->setRange(0, _plot_frames.size() - 1);
+	ui.widget_3->graph(0)->setData(_plot_frames, _plot_detected_r);
+	ui.widget_3->graph(0)->setName("Detected angle");
+	
+	ui.widget_3->replot();
 }
 void FaceTrackingApp::onNewFrame()
 {
@@ -216,8 +263,12 @@ void FaceTrackingApp::initSelected()
 	if (_selected_camera == "Intel(R) RealSense(TM) Camera SR300") {
 		camera = new RealSense();
 	}
+	else if (_selected_camera == "Microsoft Kinect 2") {
+		camera = new MKinect();
+	}
 	ui.cam_list->setEnabled(false);
 	ui.alg_list->setEnabled(false);
+	
 	camera->setRenderer(ui.camviewer);
 	camera->useFace(ui.use_face_check->isChecked());
 	if (_selected_alg == "Camera Algorithm") {
@@ -235,6 +286,8 @@ void FaceTrackingApp::initSelected()
 	ui.statusBar->showMessage("Intel(R) RealSense(TM) Camera SR300 Running with " + _selected_alg);
 	_plot_shouldbe.clear();
 	_plot_detected.clear();
+	_plot_detected_p.clear();
+	_plot_detected_r.clear();
 	_plot_frames.clear();
 	_actualFrame = 0;
 }
@@ -243,7 +296,9 @@ void  FaceTrackingApp::initAlgorithmParameters() {
 	//Read parameters from GUI
 	QMap<QString, QString> parameters;
 	parameters.insert("epsilon", ui.lineEdit->text()); //Read epsilon parameter
-
+	parameters.insert("epsilon_transform", ui.lineEdit_3->text()); //Read epsilon transformation parameter
+	parameters.insert("max_iter", ui.lineEdit_4->text()); //Read epsilon transformation parameter
+	parameters.insert("max_corresp_dist", ui.lineEdit_5->text()); //Read epsilon transformation parameter
 	bool no_subsample = ui.radioButton_3->isChecked(); //Read subsample method (only one will be true)
 	bool uniform_subsample = ui.radioButton_4->isChecked();
 	if (no_subsample) {
@@ -253,6 +308,51 @@ void  FaceTrackingApp::initAlgorithmParameters() {
 		parameters.insert("subsample", "uniform");
 		parameters.insert("radius_search", ui.lineEdit_2->text());
 	}
+	if (ui.checkBox_2->isChecked()) {
+		parameters.insert("normals", "true");
+	}
+	else {
+		parameters.insert("normals", "false");
+	}
+	if (ui.checkBox->isChecked()) {
+		parameters.insert("onetoone", "true");
+	}
+	else {
+		parameters.insert("onetoone", "false");
+	}
+	if (ui.checkBox_3->isChecked()) {
+		parameters.insert("boundary", "true");
+	}
+	else {
+		parameters.insert("boundary", "false");
+	}
+	if (ui.checkBox_5->isChecked()) {
+		parameters.insert("rej_dist", "true");
+		parameters.insert("rej_dist_threshold", ui.lineEdit_6->text());
+	}
+	else {
+		parameters.insert("rej_dist", "false");
+	}
+	if (ui.checkBox_4->isChecked()) {
+		parameters.insert("rej_median", "true");
+		parameters.insert("rej_median_threshold", ui.lineEdit_7->text());
+	}
+	else {
+		parameters.insert("rej_median", "false");
+	}
+	if (ui.checkBox_6->isChecked()) {
+		parameters.insert("rej_normals", "true");
+		parameters.insert("rej_normals_threshold", ui.lineEdit_8->text());
+	}
+	else {
+		parameters.insert("rej_normals", "false");
+	}
+	if (ui.use_projection->isChecked()) {
+		parameters.insert("correspondence", "projection");
+	}
+	if (ui.radioButton_5->isChecked()) {
+		parameters.insert("correspondence", "nearest");
+	}
 	//Set params on algorithm 
 	if (camera->trackerIsSet()) {
 		algorithm->setParameters(parameters);
@@ -260,6 +360,9 @@ void  FaceTrackingApp::initAlgorithmParameters() {
 	}
 }
 
+void FaceTrackingApp::setMessage(QString message) {
+	ui.statusBar->showMessage(message);
+}
 void FaceTrackingApp::stopCamera() {
 	timer->stop();
 	camera->stop();
@@ -275,6 +378,36 @@ void FaceTrackingApp::stopCamera() {
 	if (_test_started) {
 		testPlatform.close();
 	}
+	ui.widget->savePng("../tests/rs/last_test/yaw.png", 600, 400);
+	ui.widget_2->savePng("../tests/rs/last_test/pitch.png", 600, 400);
+	ui.widget_3->savePng("../tests/rs/last_test/roll.png", 600, 400);
+}
+
+void FaceTrackingApp::saveYawPlot() {
+	//Yaw Plot
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Plot"),
+		"",
+		tr("Images (*.png)"));
+	ui.widget->savePng(fileName, 600, 400);
+
+}
+void FaceTrackingApp::savePitchPlot() {
+
+	//Pitch plot
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Plot"),
+		"",
+		tr("Images (*.png)"));
+	ui.widget_2->savePng(fileName, 600, 400);
+
+	
+}
+void FaceTrackingApp::saveRollPlot() {
+
+	//Roll plot
+	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Plot"),
+		"",
+		tr("Images (*.png)"));
+	ui.widget_3->savePng(fileName, 600, 400);
 }
 
 QStringList FaceTrackingApp::getConnectedCameras()

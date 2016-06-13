@@ -6,7 +6,7 @@
 #include <assert.h> 
 #include <boost/geometry/geometry.hpp>
 #include <QTime>
-typedef pcl::PointCloud<pcl::PointXYZ> CloudType;
+
 
 class RealSense :
 	public Camera3D
@@ -27,11 +27,7 @@ private:
 	PXCFaceData* outputData;
 	pxcStatus sts;
 
-	CloudType::Ptr actual_cloud;
-	CloudType::Ptr last_cloud;
-	CloudType::Ptr first_cloud;
-	//Filters
-	pcl::UniformSampling<pcl::PointXYZ> uniform_sampling;
+	int _actual_frame;
 	
 	bool _last_init;
 };

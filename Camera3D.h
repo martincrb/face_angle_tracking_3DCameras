@@ -5,7 +5,11 @@
 #include "quaternion.hpp"
 #include <QFile>
 #include <QTextStream>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 #define MAX_FACES  1
+typedef pcl::PointCloud<pcl::PointXYZ> CloudType;
+
 
 class FaceTrackingApp;
 class Camera3D
@@ -30,5 +34,12 @@ protected:
 	bool _use_face;
 	float _roll, _pitch, _yaw;
 	FaceTrackingApp *app;
+	
+	CloudType::Ptr actual_cloud;
+	CloudType::Ptr last_cloud;
+	CloudType::Ptr first_cloud;
+	//Filters
+	pcl::UniformSampling<pcl::PointXYZ> uniform_sampling;
+
 };
 

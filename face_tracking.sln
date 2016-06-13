@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "face_tracking", "face_tracking.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pcl_viewer2", "..\pcl_viewer2\pcl_viewer2.vcxproj", "{647524E5-3D6B-4CD5-8CC4-A82D854E577B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -27,6 +29,16 @@ Global
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.Build.0 = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.ActiveCfg = Release|x64
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|x64.Build.0 = Release|x64
+		{647524E5-3D6B-4CD5-8CC4-A82D854E577B}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{647524E5-3D6B-4CD5-8CC4-A82D854E577B}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{647524E5-3D6B-4CD5-8CC4-A82D854E577B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{647524E5-3D6B-4CD5-8CC4-A82D854E577B}.Debug|Win32.Build.0 = Debug|Win32
+		{647524E5-3D6B-4CD5-8CC4-A82D854E577B}.Debug|x64.ActiveCfg = Debug|Win32
+		{647524E5-3D6B-4CD5-8CC4-A82D854E577B}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{647524E5-3D6B-4CD5-8CC4-A82D854E577B}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{647524E5-3D6B-4CD5-8CC4-A82D854E577B}.Release|Win32.ActiveCfg = Release|Win32
+		{647524E5-3D6B-4CD5-8CC4-A82D854E577B}.Release|Win32.Build.0 = Release|Win32
+		{647524E5-3D6B-4CD5-8CC4-A82D854E577B}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
