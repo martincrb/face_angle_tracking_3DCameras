@@ -14,6 +14,12 @@ MKinect::~MKinect()
 
 void MKinect::init(FaceTrackingApp *app){
 	this->app = app;
+	
+	_last_init = false;
+	last_cloud = CloudType::Ptr(new CloudType);
+	actual_cloud = CloudType::Ptr(new CloudType);
+	first_cloud = CloudType::Ptr(new CloudType);
+
 	_actual_frame = 0;
 	if (FAILED(GetDefaultKinectSensor(&sensor))) {
 		return;
@@ -99,11 +105,11 @@ void MKinect::getKinectData(QImage &image) {
 	while (!SUCCEEDED(reader->AcquireLatestFrame(&frame))) {
 
 	}
-	//getDepthData(frame, dest);
+	getDepthData(frame, depthP);
 	getColorData(frame, image);
 }
 
-void MKinect::getDepthData(IMultiSourceFrame* frame) {
+void MKinect::getDepthData(IMultiSourceFrame* frame, float* dest) {
 	IDepthFrame* depthframe;
 	IDepthFrameReference* frameref = NULL;
 	frame->get_DepthFrameReference(&frameref);
@@ -112,14 +118,16 @@ void MKinect::getDepthData(IMultiSourceFrame* frame) {
 	if (!depthframe) return;
 	// Get data from frame
 	unsigned int sz;
-	unsigned short* buf;
-	depthframe->AccessUnderlyingBuffer(&sz, &buf);
+	UINT16 * buf;
+	while (!SUCCEEDED(depthframe->AccessUnderlyingBuffer(&sz, &buf))) {
 
-	mapper->MapDepthFrameToCameraSpace(
+	}
+	HRESULT res = S_OK;
+	res = mapper->MapDepthFrameToCameraSpace(
 		KinectColorWidth*KinectColorHeight, buf,        // Depth frame data and size of depth frame
 		KinectColorWidth*KinectColorHeight, depth2xyz); // Output CameraSpacePoint array and size
 	// Process depth frame data...
-
+	
 	if (depthframe) depthframe->Release();
 }
 
@@ -136,14 +144,14 @@ void MKinect::getColorData(IMultiSourceFrame* frame, QImage& dest) {
 	QImage colorImage(data, KinectColorWidth, KinectColorHeight, QImage::Format_RGB32);
 	//QImage depthImage(depthData.planes[0], width2, height2, QImage::Format_RGB32);
 	dest = colorImage;
-	QDir dir("../tests/k2/last_test");
-	if (!dir.exists()) {
-		dir.mkpath(".");
-		colorImage.save("../tests/k2/last_test/image_" + QString::number(_actual_frame) + ".png", 0);
-	}
-	else {
-		colorImage.save("../tests/k2/last_test/image_" + QString::number(_actual_frame) + ".png", 0);
-	}
+	//QDir dir("../tests/k2/last_test");
+	//if (!dir.exists()) {
+	//	dir.mkpath(".");
+	//	colorImage.save("../tests/k2/last_test/image_" + QString::number(_actual_frame) + ".png", 0);
+	//}
+	//else {
+	//	colorImage.save("../tests/k2/last_test/image_" + QString::number(_actual_frame) + ".png", 0);
+	//}
 	if (colorframe) colorframe->Release();
 }
 
@@ -162,13 +170,156 @@ inline void ExtractFaceRotationInDegrees(const Vector4* pQuaternion, int* pPitch
 	*pRoll = static_cast<int>(std::atan2(2 * (x * y + w * z), w * w + x * x - y * y - z * z) / M_PI * 180.0f);
 }
 
+template <typename T> inline bool
+convertPoint(const CameraSpacePoint& src, T& tgt)
+{
+	static const float nan = std::numeric_limits<float>::quiet_NaN();
+	if (src.Z == 0 || src.Z > 0.5)
+		//Point is invalid
+	{
+		tgt.x = tgt.y = tgt.z = nan;
+		return false;
+		//tgt.x = tgt.y = tgt.z = 0;
+
+	}
+	else
+	{
+		tgt.x = -src.X;
+		tgt.y = src.Y;
+		tgt.z = src.Z;
+		return true;
+	}
+}
+
 void MKinect::update(){
 	QImage actualFrame;
+	QTime updateTime;
+	updateTime.start();
 	getKinectData(actualFrame);
 	++_actual_frame;
 	renderer->initTexture(actualFrame);
 	if (_tracker_set) {
+		bool orientationIsValid = false;
+		int SIZE = KinectColorWidth*KinectColorHeight;
+		std::vector<PXCPoint3DF32> vertices(SIZE);
+		CloudType::Ptr xyz_cloud(new CloudType(KinectColorWidth, KinectColorHeight));
+		int validP = 0;
+		for (int i = 0; i < SIZE; i++) {
+			if (convertPoint(depth2xyz[i], xyz_cloud->points[i])) {
+				++validP;
+			}
+		}
+		if (validP != 0) {//Then DO SOMETHING
+			if (_tracker_set == false) { //Use built-in algorithm
+				QTime algorithmTime;
+				algorithmTime.start();
+				orientationIsValid = track();
+				int elapsed = algorithmTime.elapsed();
+				++_actual_frame;
+				app->addIncrementalTimeMean(elapsed);
+			}
 
+			else { //Use algorithm in tracker and filters
+
+				double radius_search = tracker->getParameter("radius_search").toDouble();
+				bool subsampling_none = tracker->getParameter("subsample") == "none";
+				bool subsampling_uniform = tracker->getParameter("subsample") == "uniform";
+				bool subsampling_random = tracker->getParameter("subsample") == "random";
+
+				QTime algorithmTime;
+				algorithmTime.start();
+				if (!_last_init) {
+					_last_init = true;
+					//pcl::copyPointCloud(*xyz_cloud, *last_cloud);
+					last_cloud->is_dense = false;
+					first_cloud->is_dense = false;
+					xyz_cloud->is_dense = false;
+					std::vector<int> indices2;
+					CloudType::Ptr cloud_filtered(new CloudType);
+					pcl::removeNaNFromPointCloud(*xyz_cloud, *cloud_filtered, indices2);
+
+					//Pass cloud to renderer (Or pass the filtered one to see differences)
+
+					if (subsampling_uniform) {
+						pcl::PointCloud<int> indicesIN;
+						uniform_sampling.setInputCloud(cloud_filtered);
+						uniform_sampling.setRadiusSearch(radius_search);
+						uniform_sampling.compute(indicesIN);
+						//pcl::copyPointCloud(*cloud_filtered, indicesIN.points, *first_cloud);
+						pcl::copyPointCloud(*cloud_filtered, indicesIN.points, *first_cloud);
+						pcl::copyPointCloud(*cloud_filtered, indicesIN.points, *last_cloud);
+					}
+					else if (subsampling_none) {
+						pcl::copyPointCloud(*cloud_filtered, *first_cloud);
+						pcl::copyPointCloud(*cloud_filtered, *last_cloud);
+					}
+					else if (subsampling_random) {
+						pcl::copyPointCloud(*cloud_filtered, *first_cloud);
+						pcl::copyPointCloud(*cloud_filtered, *last_cloud);
+					}
+					//Save in first_cloud the first frame, filtered and prepared :D
+					//pcl::io::savePCDFileASCII("../clouds/rs/init_cloud.pcd", *cloud_filtered);
+				}
+				//Filter NANS for ICP
+				xyz_cloud->is_dense = false;
+
+				std::vector<int> indices;
+				CloudType::Ptr _cloud1(new CloudType);
+				pcl::removeNaNFromPointCloud(*xyz_cloud, *_cloud1, indices);
+
+				//Filter points using filter object
+				if (subsampling_uniform) {
+					QTime filterTime;
+					filterTime.start();
+					pcl::PointCloud<int> indicesOUT;
+					uniform_sampling.setInputCloud(_cloud1);
+					uniform_sampling.setRadiusSearch(radius_search);
+					uniform_sampling.compute(indicesOUT);
+					pcl::copyPointCloud(*_cloud1.get(), indicesOUT.points, *actual_cloud);
+					++_actual_frame;
+					//pcl::io::savePCDFileASCII("../clouds/rs/actual_cloud_" + QString::number(_actual_frame).toStdString() + ".pcd", *actual_cloud);
+					//pcl::copyPointCloud(*_cloud1.get(), *actual_cloud);
+					int elapsedF = filterTime.elapsed();
+					//Save frame info to file for DOCUMENTATION
+					//QFile file("../"+QString::number(radius_search)+"_uniform_info.txt");
+					//if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {
+					//	QTextStream stream(&file);
+					//	stream << radius_search << " " << _cloud1->size() - actual_cloud->size() << " " << elapsedF << endl;
+					//}
+				}
+				else if (subsampling_none) {
+					pcl::copyPointCloud(*_cloud1.get(), *actual_cloud);
+				}
+				else if (subsampling_random) {
+					pcl::copyPointCloud(*_cloud1.get(), *actual_cloud);
+				}
+
+
+
+				//Pass cloud to algorithm
+				if (_last_init) { //Compute if we have 2 frames (last_cloud is filled with the first frame)
+					app->setPointsAnalyzed(actual_cloud->size(), first_cloud->size());
+					if (actual_cloud->size() > 0) {
+
+					}
+					double fitness;
+					orientationIsValid = tracker->compute(*last_cloud.get(), *actual_cloud.get(), _roll, _pitch, _yaw, fitness);
+					app->setICPConverged(orientationIsValid, fitness);
+				}
+				int elapsed = algorithmTime.elapsed();
+				app->addIncrementalTimeMean(elapsed);
+			}
+
+
+
+			renderer->setFaceTracked(orientationIsValid);
+			app->setFaceTracked(orientationIsValid);
+			if (orientationIsValid) {
+				app->setFaceAngles(_yaw, _pitch, _roll);
+			}
+
+
+		}
 	}
 	else {
 		QTime algorithmTime;
@@ -177,6 +328,8 @@ void MKinect::update(){
 		int elapsed = algorithmTime.elapsed();
 		app->addIncrementalTimeMean(elapsed);
 	}
+	int elapsedUpdate = updateTime.elapsed();
+	app->setFilterTime(elapsedUpdate);
 	app->setFaceAngles(_yaw, _pitch, _roll);
 }
 bool MKinect::track(){

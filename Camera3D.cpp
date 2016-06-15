@@ -13,6 +13,9 @@ Camera3D::~Camera3D()
 void Camera3D::setRenderer(GLWidget *renderer) {
 	this->renderer = renderer;
 }
+float Camera3D::getFocalLength() {
+	return focalLength;
+}
 void Camera3D::useFace(bool face) {
 	_use_face = face;
 }

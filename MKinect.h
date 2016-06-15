@@ -6,6 +6,8 @@
 #include <assert.h> 
 #include <boost/geometry/geometry.hpp>
 #include <QTime>
+#include <pcl/io/grabber.h>
+#include <pcl/io/pcd_io.h>
 
 #define KinectColorWidth 1920
 #define KinectColorHeight 1080
@@ -40,8 +42,9 @@ private:
 
 	IBodyFrameReader* pBodyReader;
 	int _actual_frame;
+	float *depthP;
 	void getKinectData(QImage &image);
-	void getDepthData(IMultiSourceFrame* frame);
+	void getDepthData(IMultiSourceFrame* frame, float* dest);
 	void getColorData(IMultiSourceFrame* frame, QImage& dest);
 };
 

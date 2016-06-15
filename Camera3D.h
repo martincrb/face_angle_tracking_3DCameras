@@ -27,14 +27,17 @@ public:
 	void setTracker(TrackingAlgorithm *tracker);
 	void useFace(bool face);
 	bool trackerIsSet();
+	float getFocalLength();
 protected:
 	GLWidget *renderer;
 	TrackingAlgorithm *tracker;
 	bool _tracker_set;
 	bool _use_face;
+	bool _last_init;
+	int _actual_frame;
 	float _roll, _pitch, _yaw;
 	FaceTrackingApp *app;
-	
+	float focalLength;
 	CloudType::Ptr actual_cloud;
 	CloudType::Ptr last_cloud;
 	CloudType::Ptr first_cloud;

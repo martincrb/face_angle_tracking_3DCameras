@@ -6,11 +6,11 @@ FaceTrackingApp::FaceTrackingApp(QWidget *parent)
 	ui.setupUi(this);
 	_elapsedFrames = 0;
 	_last_mean_frametime = 0;
-	ui.lineEdit->setText("1"); //Euclidean epsilon
+	ui.lineEdit->setText("0.1"); //Euclidean epsilon
 	ui.lineEdit_2->setText("0.008"); //radius subsampling search
-	ui.lineEdit_3->setText("1"); //transformation epsilon
-	ui.lineEdit_4->setText("100"); //max iter
-	ui.lineEdit_5->setText("1"); //max correspondence distance
+	ui.lineEdit_3->setText("0.01"); //transformation epsilon
+	ui.lineEdit_4->setText("50"); //max iter
+	ui.lineEdit_5->setText("4"); //max correspondence distance
 	_actualAngle = 0;
 	_actualFrame = 0;
 	_cam_init = false;
@@ -103,8 +103,14 @@ void FaceTrackingApp::addIncrementalTimeMean(double time) {
 	++_elapsedFrames;
 	//http://math.stackexchange.com/questions/106700/incremental-averageing
 	double new_mean = ((_elapsedFrames - 1)*_last_mean_frametime + time) / _elapsedFrames;
-	ui.label_12->setText("Mean time per frame: " + QString::number(new_mean));
+	ui.label_12->setText("ICP Time (mean): " + QString::number(new_mean));
 }
+
+void FaceTrackingApp::setFilterTime(double time) {
+	ui.label_22->setText("Update time: " + QString::number(time));
+}
+
+
 void FaceTrackingApp::setPointsAnalyzed(int points, int points2) {
 	ui.label_13->setText("Points Analyzed: " + QString::number(points) + " vs " + QString::number(points2));
 }
@@ -270,7 +276,6 @@ void FaceTrackingApp::initSelected()
 	ui.alg_list->setEnabled(false);
 	
 	camera->setRenderer(ui.camviewer);
-	camera->useFace(ui.use_face_check->isChecked());
 	if (_selected_alg == "Camera Algorithm") {
 		camera->setTracker(nullptr); //Use built-in algorithm
 	}
@@ -299,6 +304,8 @@ void  FaceTrackingApp::initAlgorithmParameters() {
 	parameters.insert("epsilon_transform", ui.lineEdit_3->text()); //Read epsilon transformation parameter
 	parameters.insert("max_iter", ui.lineEdit_4->text()); //Read epsilon transformation parameter
 	parameters.insert("max_corresp_dist", ui.lineEdit_5->text()); //Read epsilon transformation parameter
+
+	parameters.insert("focal_length", QString::number(camera->getFocalLength()));
 	bool no_subsample = ui.radioButton_3->isChecked(); //Read subsample method (only one will be true)
 	bool uniform_subsample = ui.radioButton_4->isChecked();
 	if (no_subsample) {
@@ -378,9 +385,11 @@ void FaceTrackingApp::stopCamera() {
 	if (_test_started) {
 		testPlatform.close();
 	}
-	ui.widget->savePng("../tests/rs/last_test/yaw.png", 600, 400);
-	ui.widget_2->savePng("../tests/rs/last_test/pitch.png", 600, 400);
-	ui.widget_3->savePng("../tests/rs/last_test/roll.png", 600, 400);
+	QString folder = "rs";
+	if (_selected_camera == "Microsoft Kinect 2") folder = "k2";
+	ui.widget->savePng("../tests/" + folder + "/last_test/" + _selected_alg + "yaw.png", 600, 400);
+	ui.widget_2->savePng("../tests/" + folder + "/last_test/" + _selected_alg + "pitch.png", 600, 400);
+	ui.widget_3->savePng("../tests/" + folder + "/last_test/" + _selected_alg + "roll.png", 600, 400);
 }
 
 void FaceTrackingApp::saveYawPlot() {

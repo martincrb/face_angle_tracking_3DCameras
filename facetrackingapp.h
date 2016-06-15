@@ -37,7 +37,7 @@ public slots:
 	void addIncrementalTimeMean(double time);
 	void setPointsAnalyzed(int points, int points2);
 	void setICPConverged(bool conv, double fitness);
-
+	void setFilterTime(double time);
 	void setMessage(QString);
 	void startTest();
 	void updatePlot(bool test);

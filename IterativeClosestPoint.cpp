@@ -49,6 +49,7 @@ void IterativeClosestPoint::initializeParameters() {
 		//Normal ICP
 		if (params["correspondemce"] == "projection") {
 			icp.setCorrespondenceEstimation(estProj);
+			estProj->setFocalLengths(params["focal_length"].toFloat(), params["focal_length"].toFloat());
 		}
 		else if (params["correspondence"] == "nearest") {
 			icp.setCorrespondenceEstimation(estSVD);

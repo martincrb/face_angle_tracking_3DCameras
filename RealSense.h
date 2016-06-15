@@ -27,8 +27,6 @@ private:
 	PXCFaceData* outputData;
 	pxcStatus sts;
 
-	int _actual_frame;
 	
-	bool _last_init;
 };
 

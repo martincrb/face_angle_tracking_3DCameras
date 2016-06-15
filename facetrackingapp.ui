@@ -228,16 +228,23 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label_13">
+       <widget class="QLabel" name="label_22">
         <property name="text">
-         <string>Points Analyzed:</string>
+         <string>Update time:</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="label_12">
         <property name="text">
-         <string>Mean time per frame:</string>
+         <string> ICP Time (mean):</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Points Analyzed:</string>
         </property>
        </widget>
       </item>
@@ -500,13 +507,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="use_face_check">
-           <property name="text">
-            <string>Use Face</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QGroupBox" name="groupBox_3">
            <property name="title">
             <string>SubSampling parameters</string>
@@ -596,6 +596,9 @@
            </item>
            <item>
             <widget class="QCheckBox" name="checkBox_6">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Normals</string>
              </property>
@@ -608,13 +611,6 @@
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_15">
-        <item>
-         <widget class="QGroupBox" name="groupBox_6">
-          <property name="title">
-           <string>Params</string>
-          </property>
-         </widget>
-        </item>
         <item>
          <widget class="QGroupBox" name="groupBox_7">
           <property name="title">
@@ -631,7 +627,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEdit_6"/>
+              <widget class="QLineEdit" name="lineEdit_6">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -645,7 +645,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEdit_7"/>
+              <widget class="QLineEdit" name="lineEdit_7">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -659,7 +663,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEdit_8"/>
+              <widget class="QLineEdit" name="lineEdit_8">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>

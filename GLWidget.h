@@ -28,7 +28,7 @@ public:
 	void setCurrentFramePCL(pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud);
 	void setCurrentFrameRectangle(PXCPoint3DF32 rectangle[4]);
 	void setCurrentFrameRectangleRGB(PXCPointF32 rectangle[4]);
-	void initTexture(QImage texture);
+	void initTexture(const QImage& texture);
 	void setFaceTracked(bool tracked);
 	void changeMode(QString mode);
 	QString getMode();

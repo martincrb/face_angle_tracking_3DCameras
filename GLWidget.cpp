@@ -53,7 +53,7 @@ void GLWidget::changeMode(QString mode) {
 	_mode = mode;
 }
 
-void GLWidget::initTexture(QImage texture) {
+void GLWidget::initTexture(const QImage& texture) {
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -230,8 +230,8 @@ void GLWidget::setFaceTracked(bool tracked) {
 }
 
 void GLWidget::setCurrentFrameToShow(QImage &frame) {
-	texture = frame;
-	gldata = QGLWidget::convertToGLFormat(texture);
+	//texture = frame;
+	gldata = QGLWidget::convertToGLFormat(frame);
 	
 	//gldata = QGLWidget::convertToGLFormat(*texture);
 }
