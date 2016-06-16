@@ -77,7 +77,7 @@ void IterativeClosestPoint::initializeParameters() {
 		if (_rej_normal){
 			_rej_normal_threshold = params["rej_normals_threshold"].toFloat();
 			_rejector_normal->setThreshold(_rej_normal_threshold);
-			icp.addCorrespondenceRejector(_rejector_normal);
+			icp.addCorrespondenceRejector(  _rejector_normal);
 		}
 	}
 	else {
